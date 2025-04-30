@@ -12,10 +12,8 @@
   (and (string? s)
        (string=? (string-trim s) "")))
 
-
 ;; Conexão com o banco SQLite
 (define conn (sqlite3-connect #:database "banco.sqlite"))
-
 
 ;; Estilização
 (define css-estilo
@@ -253,7 +251,6 @@
     aprendizado_nota aprendizado_melhoria
     media_avaliacao))
 
-
 ;; Formulário
 (define (formulario req)
   (response/xexpr
@@ -302,7 +299,6 @@
 
       (a ((href "/avaliacoes") (id "btn") (style "margin-right: 0;")) "Ver Avaliações")))))
 
-
 ;; Processar POST
 (define (salvar req)
   (define raw-method (request-method req))
@@ -321,7 +317,7 @@
            (h1 "405 - Método não permitido")
            (p "Essa rota só pode ser acessada via POST."))))
       
-      (let* ([bs (request-bindings req)]
+      (let* ([bs     (request-bindings req)]
              [campos
               '(sistema_nome
                 avaliador_nome
@@ -334,9 +330,9 @@
                 aprendizado_nota aprendizado_melhoria)]
              [dados
               (for/list ([k campos])
-                (let* ([b (assoc k bs)]
+                (let* ([b   (assoc k bs)]
                        [raw (and b (cdr b))]
-                       [s (cond
+                       [s   (cond
                               [(bytes? raw) (bytes->string/utf-8 raw)]
                               [(string? raw) raw]
                               [else (format "~a" raw)])])
@@ -370,7 +366,6 @@
                    (h1 "Erro ao salvar")
                    (p "Preencha o nome do sistema, nome do avaliador e selecione todas as notas.")))))))))
 
-
 ;; Listar
 (define (listar req)
   (define rows (query-rows conn "SELECT id, sistema_nome, avaliador_nome FROM avaliacoes ORDER BY id"))
@@ -396,7 +391,6 @@
               (td (a ((href ,(format "/avaliacao?id=~a" id)) (class "row-link")) ,sistema))
               (td (a ((href ,(format "/avaliacao?id=~a" id)) (class "row-link")) ,avaliador))))))
       (a ((href "/") (id "btn")) "Nova Avaliação")))))
-
 
 ;; Detalhar
 (define (detalhar req)
@@ -469,6 +463,8 @@
          (a ((href "/avaliacoes") (id "btn")) "Voltar à Lista")))))
 
 
+
+
 ;; Excluir avaliação
 (define (excluir req)
   (define id-str (extract-binding/single 'id (request-bindings req)))
@@ -495,7 +491,6 @@
          (h1 "404 – Página não encontrada")
          (p "A rota \"" ,route "\" não existe.")
          (a ((href "/")) "Voltar"))))]))
-
 
 ;; Inicia o servidor
 (serve/servlet disp
